@@ -32,15 +32,15 @@ The research question is whether SHAP explanations can be trusted: if two differ
 
 ## Technical requirements
 
-- Python 3.10 or newer (tested on 3.12.3)
-- Libraries (see `requirements.txt`). Tested with: xgboost 3.4.1, shap 0.54.1, scikit-learn 1.8.0, pandas 3.0.2, numpy 2.4.4, streamlit (latest at test time), pytest
+- Python 3.10 or newer. Tested on Python 3.12.3 (Linux) and Python 3.13.2 (Windows 11, 8 cores).
+- Libraries (see `requirements.txt`). Windows 11 run: xgboost 3.4.1, shap 0.54.1, scikit-learn 1.9.1, pandas 3.1.0, numpy 2.5.4, streamlit 1.66.1, pytest 9.2.0
 - Hardware: runs on CPU only; the full dataset needs roughly 1 GB of RAM
 - Browser (for the web interface): any current browser
 
 ## Installation
 
 ```bash
-git clone [REPO URL]
+git clone https://github.com/utatsineza/loan-default-risk-audit.git
 cd loan-default-risk-audit
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
