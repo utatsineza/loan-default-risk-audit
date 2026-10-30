@@ -44,6 +44,8 @@ class AgreementScore:
     jaccard_top_k: float
     top_feature_match: bool
     divergent: bool
+    top_features_a: str = ""   # "|"-joined top-k features of Model A (CSV friendly)
+    top_features_b: str = ""
 
 
 class AuditReport:
@@ -88,6 +90,8 @@ class StabilityAuditor:
             jaccard_top_k=jaccard,
             top_feature_match=a.ranking[0] == b.ranking[0],
             divergent=jaccard < self.divergence_jaccard,
+            top_features_a="|".join(a.top_k(self.top_k)),
+            top_features_b="|".join(b.top_k(self.top_k)),
         )
 
     def run(self, X: pd.DataFrame) -> AuditReport:
@@ -97,3 +101,26 @@ class StabilityAuditor:
         results_b = self.explainer_b.explain(X)
         scores = [self.score_pair(a, b) for a, b in zip(results_a, results_b)]
         return AuditReport(scores, self.top_k)
+
+    def sensitivity(self, X: pd.DataFrame, ks=(2, 3, 5),
+                    thresholds=(0.3, 0.5, 0.7, 1.0)) -> pd.DataFrame:
+        """How the share of divergent cases changes with the two analyst-chosen settings.
+
+        ``top_k`` (how many features are compared) and the Jaccard threshold (how little overlap
+        counts as divergent) are not given by theory, so the headline "% divergent" is reported
+        across a grid of them. A threshold of 1.0 means any difference in the top-k set.
+        SHAP values are computed once and reused for every grid cell.
+        """
+        if X.empty:
+            raise ValueError("No borrowers supplied for the audit")
+        results_a = self.explainer_a.explain(X)
+        results_b = self.explainer_b.explain(X)
+        rows = []
+        for k in ks:
+            jaccards = np.array([jaccard_top_k(a.values, b.values, k)
+                                 for a, b in zip(results_a, results_b)])
+            for threshold in thresholds:
+                rows.append({"top_k": k, "jaccard_threshold": threshold,
+                             "pct_divergent": float((jaccards < threshold).mean() * 100),
+                             "mean_jaccard": float(jaccards.mean())})
+        return pd.DataFrame(rows)
