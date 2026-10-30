@@ -1,0 +1,73 @@
+{
+  "metrics": [
+    {
+      "model_id": "baseline_lr",
+      "pr_auc": 0.32722960935601836,
+      "roc_auc": 0.8016758425422423,
+      "f1": 0.28286014721345953,
+      "precision": 0.17921385742838108,
+      "recall": 0.6708229426433915,
+      "threshold": 0.5
+    },
+    {
+      "model_id": "model_A",
+      "pr_auc": 0.39960113883946774,
+      "roc_auc": 0.8663862134269612,
+      "f1": 0.3450696252688781,
+      "precision": 0.22319859402460457,
+      "recall": 0.7600997506234414,
+      "threshold": 0.5
+    },
+    {
+      "model_id": "model_B",
+      "pr_auc": 0.40241635844629786,
+      "roc_auc": 0.8688878357775858,
+      "f1": 0.3390124796527401,
+      "precision": 0.21664355062413315,
+      "recall": 0.7790523690773067,
+      "threshold": 0.5
+    }
+  ],
+  "matching": {
+    "matched": true,
+    "reference_val_roc_auc": 0.8596185544132168,
+    "candidate_val_roc_auc": 0.8635255020824435,
+    "difference": 0.0039069476692267235,
+    "tolerance": 0.005,
+    "candidates_tried": 1,
+    "model_b_config": {
+      "max_depth": 3,
+      "n_estimators": 150,
+      "learning_rate": 0.1,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "random_state": 7
+    }
+  },
+  "audit": {
+    "n_borrowers": 300,
+    "top_k": 3,
+    "mean_spearman": 0.8967676767676767,
+    "median_spearman": 0.9212121212121211,
+    "mean_jaccard_top_k": 0.8566666666666667,
+    "pct_top_feature_match": 93.66666666666667,
+    "pct_divergent": 1.6666666666666667
+  },
+  "config": {
+    "target": "SeriousDlqin2yrs",
+    "test_size": 0.2,
+    "val_size": 0.2,
+    "random_state": 42,
+    "n_estimators": 200,
+    "max_depth": 4,
+    "match_tolerance": 0.005,
+    "audit_sample_size": 300,
+    "borderline_range": [
+      0.4,
+      0.6
+    ],
+    "borderline_share": 0.5,
+    "top_k": 3,
+    "divergence_jaccard": 0.5
+  }
+}

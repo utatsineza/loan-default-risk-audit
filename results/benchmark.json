@@ -1,0 +1,21 @@
+{
+  "data_source": "cs-training.csv",
+  "train_rows": 120000,
+  "fit_seconds": 5.097,
+  "single_prediction_ms": 34.8,
+  "batch_prediction_rows_per_second": 284094,
+  "shap_explainer_build_seconds": 0.175,
+  "single_shap_explanation_ms": 78.067,
+  "shap_300_borrowers_seconds": 0.222,
+  "peak_memory_mb": 249.0,
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.2",
+    "cpu_count": 8,
+    "xgboost": "3.4.1",
+    "shap": "0.54.1",
+    "scikit_learn": "1.9.1",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4"
+  }
+}
