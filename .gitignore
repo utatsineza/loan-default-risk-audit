@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+.env
+.DS_Store
+# The Kaggle dataset is not redistributed: download it from Kaggle (see README).
+cs-training.csv
+cs-test.csv
+data/
