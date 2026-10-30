@@ -33,3 +33,11 @@ class Config:
     borderline_share: float = 0.5   # share of the audit sample drawn from borderline cases
     top_k: int = 3                  # features compared by the Jaccard index
     divergence_jaccard: float = 0.5  # Jaccard below this marks a case as divergent
+
+    # --- extended experiment (supervisor feedback) ---
+    n_pairs: int = 5                 # matched model pairs audited (1 = the single main pair only)
+    tolerance_sweep: tuple = (0.002, 0.005, 0.01)   # matching tolerances compared in the sensitivity study
+    sensitivity_ks: tuple = (2, 3, 5)                # top-k sizes compared in the sensitivity study
+    sensitivity_thresholds: tuple = (0.3, 0.5, 0.7, 1.0)  # Jaccard thresholds for "divergent"
+    run_resampling: bool = True      # SMOTE / ADASYN comparison against cost-sensitive weighting
+    resampling_methods: tuple = ("smote", "adasyn")
