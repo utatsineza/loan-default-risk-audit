@@ -134,6 +134,79 @@ def render_audit_page() -> None:
         st.subheader(f"Divergent borrowers ({len(divergent)})")
         st.dataframe(divergent.round(3), hide_index=True)
 
+    render_extended_results(summary)
+
+
+def read_csv_if_present(name: str):
+    path = results_dir() / name
+    return pd.read_csv(path) if path.exists() else None
+
+
+def render_extended_results(summary: dict) -> None:
+    """Resampling comparison, many model pairs, sensitivity and divergence profile."""
+    resampling = read_csv_if_present("resampling_comparison.csv")
+    if resampling is not None:
+        st.subheader("Cost-sensitive weighting vs resampling")
+        st.caption("Same XGBoost settings and the same test set; only the way class imbalance "
+                   "is handled differs. PR-AUC, ROC-AUC and best F1 do not depend on the 0.5 "
+                   "decision threshold, so they are the fair comparison.")
+        st.dataframe(resampling.round(4), hide_index=True)
+        for note in summary.get("resampling", {}).get("skipped", []):
+            st.warning(f"Skipped: {note}")
+
+    pairs = read_csv_if_present("pairs_summary.csv")
+    if pairs is not None:
+        aggregate = summary.get("pairs", {}).get("aggregate", {})
+        st.subheader(f"Stability across {len(pairs)} model pair(s)")
+        if aggregate:
+            c1, c2, c3 = st.columns(3)
+            div = aggregate["pct_divergent"]
+            c1.metric("Pairs meeting the tolerance", f"{aggregate['n_matched_pairs']} of {aggregate['n_pairs']}")
+            c2.metric("Mean Spearman (across pairs)", f"{aggregate['mean_spearman']['mean']:.2f}")
+            c3.metric("Divergent cases (range)", f"{div['min']:.1f}% to {div['max']:.1f}%")
+            if not aggregate.get("used_matched_pairs_only", True):
+                st.warning("No pair met the matching tolerance, so all pairs are summarised.")
+        st.dataframe(pairs.round(4), hide_index=True)
+        plot = results_dir() / "pairs_agreement.png"
+        if plot.exists():
+            st.image(str(plot))
+
+    thresholds = read_csv_if_present("sensitivity_thresholds.csv")
+    tolerance = read_csv_if_present("sensitivity_tolerance.csv")
+    if thresholds is not None or tolerance is not None:
+        st.subheader("How sensitive is the divergence figure?")
+    if thresholds is not None:
+        st.caption("Share of audited borrowers flagged as divergent for different top-k sizes "
+                   "and Jaccard thresholds (a threshold of 1.0 flags any difference).")
+        st.dataframe(thresholds.pivot(index="top_k", columns="jaccard_threshold",
+                                      values="pct_divergent").round(1))
+    if tolerance is not None:
+        st.caption("Effect of how strictly Model B must match Model A's accuracy.")
+        st.dataframe(tolerance.round(4), hide_index=True)
+
+    profile = read_csv_if_present("divergence_profile.csv")
+    info = summary.get("divergence", {}).get("summary", {})
+    if info:
+        st.subheader("What characterises divergent borrowers?")
+        if "mean_score_divergent" in info:
+            c1, c2 = st.columns(2)
+            c1.metric("Mean score: divergent vs agreeing",
+                      f"{info['mean_score_divergent']:.2f} vs {info['mean_score_agreeing']:.2f}")
+            c2.metric("In the 0.4-0.6 band",
+                      f"{info['pct_borderline_divergent']:.0f}% vs {info['pct_borderline_agreeing']:.0f}%")
+            contested = ", ".join(f"{c['feature']} ({c['cases']})"
+                                  for c in info.get("most_contested_features", []))
+            st.write(f"Based on {info['n_divergent']} divergent and {info['n_agreeing']} agreeing "
+                     f"cases pooled over all pairs. Features most often in one model's top-k "
+                     f"but not the other's: {contested}.")
+        else:
+            st.info(info.get("note", "Not enough divergent cases to compare."))
+        if profile is not None:
+            st.caption("Exploratory comparison: standardised difference in each feature between "
+                       "divergent and agreeing borrowers. p-values are not corrected for "
+                       "multiple comparisons.")
+            st.dataframe(profile.round(4), hide_index=True)
+
 
 def main() -> None:
     page = st.sidebar.radio("Page", ["Predict & Explain", "Stability Audit Results"])

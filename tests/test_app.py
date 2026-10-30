@@ -15,7 +15,7 @@ APP_PATH = str(Path(__file__).resolve().parents[1] / "app.py")
 @pytest.fixture(scope="module")
 def results_folder(tmp_path_factory, synthetic_df):
     folder = tmp_path_factory.mktemp("results")
-    ExperimentPipeline(Config(n_estimators=25, audit_sample_size=50), str(folder)).run(synthetic_df)
+    ExperimentPipeline(Config(n_estimators=25, audit_sample_size=50, n_pairs=2), str(folder)).run(synthetic_df)
     return str(folder)
 
 
@@ -58,3 +58,13 @@ def test_missing_audit_results_shows_info(monkeypatch, tmp_path):
     app = open_app(monkeypatch, str(tmp_path / "empty"))
     app.sidebar.radio[0].set_value("Stability Audit Results").run()
     assert not app.exception and app.info
+
+
+def test_audit_page_shows_extended_sections(monkeypatch, results_folder):
+    app = open_app(monkeypatch, results_folder)
+    app.sidebar.radio[0].set_value("Stability Audit Results").run()
+    assert not app.exception
+    headers = [h.value for h in app.subheader]
+    assert "Cost-sensitive weighting vs resampling" in headers
+    assert any(h.startswith("Stability across") for h in headers)
+    assert "How sensitive is the divergence figure?" in headers
