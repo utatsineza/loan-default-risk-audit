@@ -7,3 +7,4 @@ shap>=0.44
 matplotlib>=3.7
 streamlit>=1.30
 pytest>=7.0
+imbalanced-learn>=0.12

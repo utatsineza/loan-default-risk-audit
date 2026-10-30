@@ -62,11 +62,17 @@ class XGBConfig:
 
 
 class XGBoostModel(BaseModel):
-    """XGBoost with cost-sensitive weighting (scale_pos_weight), no resampling."""
+    """XGBoost with cost-sensitive weighting (scale_pos_weight), no resampling.
 
-    def __init__(self, model_id: str, config: XGBConfig = XGBConfig()):
+    ``cost_sensitive=False`` switches the weighting off (scale_pos_weight = 1). That is only
+    used by the resampling comparison, where class balance is handled by resampling instead.
+    """
+
+    def __init__(self, model_id: str, config: XGBConfig = XGBConfig(),
+                 cost_sensitive: bool = True):
         super().__init__(model_id)
         self.config = config
+        self.cost_sensitive = cost_sensitive
         self.scale_pos_weight: Optional[float] = None
         self._model: Optional[xgb.XGBClassifier] = None
 
@@ -74,7 +80,8 @@ class XGBoostModel(BaseModel):
         positives, negatives = int((y == 1).sum()), int((y == 0).sum())
         if positives == 0 or negatives == 0:
             raise ValueError("Training labels must contain both classes")
-        self.scale_pos_weight = negatives / positives  # inverse class ratio
+        # inverse class ratio, or 1.0 (no weighting) when the comparison turns it off
+        self.scale_pos_weight = negatives / positives if self.cost_sensitive else 1.0
         c = self.config
         self._model = xgb.XGBClassifier(
             max_depth=c.max_depth, n_estimators=c.n_estimators,
