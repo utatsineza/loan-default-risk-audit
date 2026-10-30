@@ -18,7 +18,7 @@ from loan_audit.models import XGBoostModel
 
 RISK_THRESHOLD = 0.5
 
-st.set_page_config(page_title="Loan Default Risk Predictor", layout="centered")
+st.set_page_config(page_title="Loan Default Risk Predictor", layout="wide")
 
 
 def results_dir() -> Path:
