@@ -159,17 +159,17 @@ class MatchedModelSelector:
                             random_state=seed)
 
     def select(self, X_fit, y_fit, X_val, y_val) -> MatchResult:
-        reference_auc = roc_auc_score(y_val, self.reference.predict_proba(X_val))
+        reference_auc = float(roc_auc_score(y_val, self.reference.predict_proba(X_val)))
         best: Optional[MatchResult] = None
         tried = 0
         for config in self.candidate_configs():
             tried += 1
             candidate = XGBoostModel("model_B", config).fit(X_fit, y_fit)
-            auc_value = roc_auc_score(y_val, candidate.predict_proba(X_val))
+            auc_value = float(roc_auc_score(y_val, candidate.predict_proba(X_val)))
             difference = abs(auc_value - reference_auc)
             if best is None or difference < best.difference:
                 best = MatchResult(candidate, reference_auc, auc_value, difference,
-                                   difference <= self.tolerance, tried)
+                                   bool(difference <= self.tolerance), tried)
             if difference <= self.tolerance:
                 break
         if best is None:
