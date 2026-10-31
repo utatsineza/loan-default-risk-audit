@@ -12,7 +12,7 @@ This project predicts whether a borrower will become seriously delinquent (90+ d
 The research question is whether SHAP explanations can be trusted: if two differently configured XGBoost models reach the same accuracy, do they give the same reasons for the same borrower? The system trains a **Model A**, searches for a **Model B** with matching ROC-AUC but a different tree depth and random seed, and measures how much their SHAP explanations agree (Spearman rank correlation and top-k Jaccard index) on a sample of borrowers. The whole audit is repeated over **several independent model pairs**, and its headline figure is tested for sensitivity to the choices an analyst has to make.
 
 **Links**
-- Walkthrough video: `[ADD LINK]`
+- Walkthrough video: `https://youtu.be/jGAdmOd5CSI`
 - Technical report (PDF): `https://github.com/utatsineza/loan-default-risk-audit/blob/main/docs/Technical_Report_Loan_Default_Risk_Audit%20.pdf`
 
 ## Key definitions
