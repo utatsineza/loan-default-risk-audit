@@ -40,9 +40,9 @@ The research question is whether SHAP explanations can be trusted: if two differ
 
 ## Technical requirements
 
-- Python 3.10 or newer. Tested on Python 3.12.3 (Linux) and Python 3.13.2 (Windows 11, 8 cores).
-- Libraries (see `requirements.txt`). Windows 11 run: xgboost 3.4.1, shap 0.54.1, scikit-learn 1.9.1, pandas 3.1.0, numpy 2.5.4, streamlit 1.66.1, pytest 9.2.0, imbalanced-learn (for SMOTE / ADASYN)
-- Hardware: runs on CPU only; peak memory of about 250 MB was measured for the benchmark on Windows 11
+- Python 3.10 or newer. Tested on Windows 11 (Python 3.13.2, 8 cores) and on Google Colab, Linux (Python 3.13.18, 2 cores). All 62 tests pass in both.
+- Libraries (see `requirements.txt`). Windows 11 run: xgboost 3.4.1, shap 0.54.1, scikit-learn 1.9.1, pandas 3.1.0, numpy 2.5.4, streamlit 1.66.1, pytest 9.2.0, imbalanced-learn (for SMOTE / ADASYN). Colab run: xgboost 3.4.1, shap 0.54.1, scikit-learn 1.6.1, pandas 2.2.3, numpy 2.1.3
+- Hardware: runs on CPU only; peak memory stayed below 350 MB in the benchmark (see Performance below)
 - Browser (for the web interface): any current browser
 
 ## Installation
@@ -97,6 +97,22 @@ Quick check of the code without the dataset: `python -m loan_audit.pipeline --sy
 | `divergence_profile.csv` | Divergent vs agreeing borrowers, feature by feature |
 | `models/model_A.json`, `models/model_B.json` | Trained XGBoost models |
 | `benchmark.json` | Speed, memory and environment from `scripts/benchmark.py` |
+
+## Performance
+
+`scripts/benchmark.py` was run on the full dataset in two environments (results in `results/benchmark.json` and `results/benchmark_colab.json`):
+
+| Measure | Windows 11, 8 cores | Colab Linux, 2 cores |
+|---|---|---|
+| Model fit (120,000 rows) | 5.10 s | 1.03 s |
+| Single prediction | 34.8 ms | 1.79 ms |
+| Batch prediction | 284,094 rows/s | 631,654 rows/s |
+| Single SHAP explanation | 78.1 ms | 2.41 ms |
+| SHAP for 300 borrowers | 0.222 s | 0.043 s |
+| Peak memory | 249 MB | 346 MB |
+| Full test suite (62 tests) | 179 s | 26 s |
+
+The cause of the speed difference was not investigated, so this shows adequate performance in both environments and does not rank the platforms. Peak memory comes from different operating-system counters on the two systems, so the two figures are not strictly comparable.
 
 ## Repository structure
 
