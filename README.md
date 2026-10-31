@@ -1,6 +1,8 @@
 # Loan Default Risk Prediction with a SHAP Explanation Stability Audit
 
-**Author:** Henriette Utatsineza (Feza) | BSc (Hons) Software Engineering, ALU | ML Track
+**Author:** Henriette Utatsineza 
+BSc (Hons) Software Engineering, ALU  
+ML Track
 **Supervisor:** Elvira Khwatenge
 
 ## Project overview
@@ -11,7 +13,7 @@ The research question is whether SHAP explanations can be trusted: if two differ
 
 **Links**
 - Walkthrough video: `[ADD LINK]`
-- Technical report (PDF): `[ADD LINK]`
+- Technical report (PDF): `https://github.com/utatsineza/loan-default-risk-audit/blob/main/docs/Technical_Report_Loan_Default_Risk_Audit%20.pdf`
 
 ## Key definitions
 
