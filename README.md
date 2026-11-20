@@ -1,6 +1,7 @@
 # Loan Default Risk Prediction with a SHAP Explanation Stability Audit
 
-**Author:** Henriette Utatsineza (Feza) | BSc (Hons) Software Engineering, ALU | ML Track
+**Author:** Henriette Utatsineza  
+ BSc (Hons) Software Engineering 
 **Supervisor:** Elvira Khwatenge
 
 ## Project overview

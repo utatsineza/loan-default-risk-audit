@@ -1,4 +1,5 @@
-"""Streamlit demo interface: predict + explain one borrower, and browse the stability audit.
+"""Streamlit demo interface: predict + explain one borrower, browse the stability audit,
+and read the privacy and terms page.
 
 Run from the repository root:  streamlit run app.py
 Set LOAN_RESULTS_DIR to read results from somewhere other than ./results.
@@ -17,6 +18,20 @@ from loan_audit.explain import SHAPExplainer
 from loan_audit.models import XGBoostModel
 
 RISK_THRESHOLD = 0.5
+
+# Plain-language names, so the SHAP chart uses the same labels as the input form.
+DISPLAY_NAMES = {
+    "RevolvingUtilizationOfUnsecuredLines": "Revolving credit utilization",
+    "age": "Age",
+    "NumberOfTime30-59DaysPastDueNotWorse": "Times 30-59 days past due",
+    "DebtRatio": "Debt ratio",
+    "MonthlyIncome": "Monthly income (USD)",
+    "NumberOfOpenCreditLinesAndLoans": "Open credit lines/loans",
+    "NumberOfTimes90DaysLate": "Times 90+ days late",
+    "NumberRealEstateLoansOrLines": "Real estate loans/lines",
+    "NumberOfTime60-89DaysPastDueNotWorse": "Times 60-89 days past due",
+    "NumberOfDependents": "Number of dependents",
+}
 
 st.set_page_config(page_title="Loan Default Risk Predictor", layout="wide")
 
@@ -62,7 +77,9 @@ def render_predict_page() -> None:
         late_60 = st.number_input("Times 60-89 days past due", 0, 30, 0)
         late_90 = st.number_input("Times 90+ days late", 0, 30, 0)
 
-    if not st.button("Predict default risk", type="primary"):
+    agreed = st.checkbox("I understand this is a demo and I will not enter real personal "
+                         "or financial information.")
+    if not st.button("Predict default risk", type="primary", disabled=not agreed):
         return
 
     borrower = build_borrower({
@@ -87,7 +104,8 @@ def render_predict_page() -> None:
     result = explainer.explain_one(borrower)
     explanation = shap.Explanation(values=result.values, base_values=result.base_value,
                                    data=borrower.iloc[0].values,
-                                   feature_names=list(result.feature_names))
+                                   feature_names=[DISPLAY_NAMES.get(n, n)
+                                                  for n in result.feature_names])
     plt.close("all")
     shap.plots.waterfall(explanation, show=False)
     figure = plt.gcf()
@@ -208,12 +226,45 @@ def render_extended_results(summary: dict) -> None:
             st.dataframe(profile.round(4), hide_index=True)
 
 
+def render_privacy_page() -> None:
+    st.title("Privacy & Terms")
+
+    st.subheader("What this app is")
+    st.write("A student research demo that estimates loan default risk and explains the "
+             "result. It is not a real lending tool.")
+
+    st.subheader("What data it uses")
+    st.write("Only the values you type in. Please enter made-up numbers, not real personal "
+             "or financial details.")
+
+    st.subheader("What happens to your data")
+    st.write("The result is calculated while the page is open and is not saved by the app. "
+             "There are no accounts, no sign-in and no database.")
+
+    st.subheader("What I cannot control")
+    st.write("The hosting service (Streamlit Community Cloud) may keep its own technical logs.")
+
+    st.subheader("Limits of the results")
+    st.write("The score is not a calibrated probability. Do not use it to make real "
+             "decisions about real people.")
+
+    st.subheader("Deleting your data")
+    st.write("Because the app stores nothing, there is nothing to delete. "
+             "Questions: [h.utatsinez@alustudent.com]")
+
+    st.subheader("Licence")
+    st.write("Code licence: [your repo's licence]. Third-party libraries keep their own licences.")
+
+
 def main() -> None:
-    page = st.sidebar.radio("Page", ["Predict & Explain", "Stability Audit Results"])
+    page = st.sidebar.radio("Page", ["Predict & Explain", "Stability Audit Results",
+                                     "Privacy & Terms"])
     if page == "Predict & Explain":
         render_predict_page()
-    else:
+    elif page == "Stability Audit Results":
         render_audit_page()
+    else:
+        render_privacy_page()
 
 
 main()
