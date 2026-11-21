@@ -8,3 +8,5 @@ __pycache__/
 cs-training.csv
 cs-test.csv
 data/
+results/audit_scores_all_pairs.csv
+results_demo/audit_scores_all_pairs.csv
