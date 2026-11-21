@@ -248,12 +248,12 @@ def render_privacy_page() -> None:
     st.write("The score is not a calibrated probability. Do not use it to make real "
              "decisions about real people.")
 
-    st.subheader("Deleting your data")
     st.write("Because the app stores nothing, there is nothing to delete. "
-             "Questions: [h.utatsinez@alustudent.com]")
+         "Questions: h.utatsinez@alustudent.com")
 
     st.subheader("Licence")
-    st.write("Code licence: [your repo's licence]. Third-party libraries keep their own licences.")
+    st.write("Code licence: MIT. The training data (Give Me Some Credit) is used under "
+         "Kaggle's competition rules. Third-party libraries keep their own licences.")
 
 
 def main() -> None:
